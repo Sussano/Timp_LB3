@@ -2,31 +2,31 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <codecvt>
 #include <locale>
-#include <stdexcept>
-
-using namespace std;
-
-class cipher_error : public std::invalid_argument {
-public:
-    explicit cipher_error(const std::string& what_arg) : std::invalid_argument(what_arg) {}
-    explicit cipher_error(const char* what_arg) : std::invalid_argument(what_arg) {}
-};
-
-class modAlphaCipher {
+class modAlphaCipher
+{
 private:
-    wstring numAlpha = L"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
-    map<wchar_t, int> alphaNum;
-    vector<int> key;
-    vector<int> convert(const wstring& s);
-    wstring convert(const vector<int>& v);
-    wstring getValidKey(const wstring& s);
-    wstring getValidOpenText(const wstring& s);
-    wstring getValidCipherText(const wstring& s);
-
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> codec;
+	std::wstring numAlpha = L"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";  //алфавит по порядку
+	std::map <wchar_t,int> alphaNum;   //ассоциативный массив "номер по символу"
+	std::vector <int> key;          //ключ
+	std::vector<int> convert(const std::wstring& ws);//преобразование строка-вектор
+	std::wstring convert(const std::vector<int>& v);//преобразование вектор-строка
+	std::wstring getValidKey(const std::wstring & ws);
+	std::wstring getValidOpenText(const std::wstring & ws);
+	std::wstring getValidCipherText(const std::wstring & ws);
 public:
-    modAlphaCipher() = delete;
-    modAlphaCipher(const wstring& skey);
-    wstring encrypt(const wstring& open_text);
-    wstring decrypt(const wstring& cipher_text);
+	modAlphaCipher()=delete;//запретим конструктор без параметров
+	modAlphaCipher(const std::wstring& wskey);  //конструктор для установки ключа
+	std::wstring encrypt(const std::wstring& open_text);  //зашифрование
+	std::wstring decrypt(const std::wstring& cipher_text);//расшифрование
+};
+class cipher_error: public std::invalid_argument
+{
+public:
+	explicit cipher_error (const std::string& what_arg):
+		std::invalid_argument(what_arg) {}
+	explicit cipher_error (const char* what_arg):
+		std::invalid_argument(what_arg) {}
 };
